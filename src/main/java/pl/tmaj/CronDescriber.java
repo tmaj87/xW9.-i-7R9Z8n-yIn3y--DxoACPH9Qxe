@@ -3,7 +3,6 @@ package pl.tmaj;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
@@ -12,10 +11,12 @@ public class CronDescriber {
 
     private static final String SPACE = " ";
     private static final String COMMA = ",";
+    private static final String DASH = "-";
     private static final int MINUTES_INDEX = 0;
     private static final int MAX_MINUTES = 60;
     private static final Predicate<String> WITH_ASTERISK = value -> value.startsWith("*/");
-    private static final Predicate<String> WITH_MULTIPLE_VALUES = value -> Pattern.compile(COMMA).matcher(value).find();
+    private static final Predicate<String> WITH_MULTIPLE_VALUES = value -> value.contains(COMMA);
+    private static final Predicate<String> WITH_RANGE = value -> value.contains(DASH);
 
     private final List<String> parts;
 
@@ -31,17 +32,28 @@ public class CronDescriber {
         if (WITH_MULTIPLE_VALUES.test(part)) {
             return minutesMultipleValues(part);
         }
+        if (WITH_RANGE.test(part)) {
+            return minutesInRange(part);
+        }
         return part;
-    }
-
-    private String minutesMultipleValues(String part) {
-        return String.join(SPACE, part.split(","));
     }
 
     private String minutesWithAsterisk(String part) {
         int asInt = parsePart(part);
         return IntStream.range(0, MAX_MINUTES / asInt)
                 .map(i -> i * asInt)
+                .mapToObj(Objects::toString)
+                .collect(joining(SPACE));
+    }
+
+    private String minutesMultipleValues(String part) {
+        return String.join(SPACE, part.split(COMMA));
+    }
+
+    private String minutesInRange(String part) {
+        int from = Integer.parseInt(part.substring(0, part.indexOf(DASH)));
+        int to = Integer.parseInt(part.substring(part.indexOf(DASH) + 1));
+        return IntStream.rangeClosed(from, to)
                 .mapToObj(Objects::toString)
                 .collect(joining(SPACE));
     }

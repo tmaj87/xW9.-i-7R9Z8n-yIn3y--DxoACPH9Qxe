@@ -22,4 +22,10 @@ class CronDescriberTest {
         CronDescriber cronDescriber = new CronDescriber("1,15");
         Assertions.assertEquals("1 15", cronDescriber.getMinutes());
     }
+
+    @Test
+    void shouldParseRangeOfValues() {
+        CronDescriber cronDescriber = new CronDescriber("1-5");
+        Assertions.assertEquals("1 2 3 4 5", cronDescriber.getMinutes());
+    }
 }
