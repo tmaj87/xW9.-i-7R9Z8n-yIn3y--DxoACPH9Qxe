@@ -1,14 +1,18 @@
 package pl.tmaj.with;
 
+import lombok.AllArgsConstructor;
+
 import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.joining;
 
+@AllArgsConstructor
 public class Divided implements Operation {
 
     private static final String SPACE = " ";
-    private static final int MAX_MINUTES = 60;
+
+    private final int limit;
 
     @Override
     public boolean test(String part) {
@@ -18,7 +22,7 @@ public class Divided implements Operation {
     @Override
     public String result(String part) {
         int asInt = Integer.parseInt(part.substring(2));
-        return IntStream.range(0, MAX_MINUTES / asInt)
+        return IntStream.range(0, limit / asInt)
                 .map(i -> i * asInt)
                 .mapToObj(Objects::toString)
                 .collect(joining(SPACE));
