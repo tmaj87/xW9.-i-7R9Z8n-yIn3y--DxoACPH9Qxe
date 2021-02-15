@@ -1,8 +1,8 @@
-package pl.tmaj;
+package pl.tmaj.parts;
 
 public class Minutes extends Part {
 
-    protected Minutes() {
+    public Minutes() {
         super(60);
     }
 }

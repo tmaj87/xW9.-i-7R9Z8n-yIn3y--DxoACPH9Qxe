@@ -1,4 +1,4 @@
-package pl.tmaj.with;
+package pl.tmaj.operations;
 
 import lombok.AllArgsConstructor;
 

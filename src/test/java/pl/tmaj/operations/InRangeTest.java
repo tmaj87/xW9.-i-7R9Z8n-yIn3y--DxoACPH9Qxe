@@ -1,4 +1,4 @@
-package pl.tmaj.with;
+package pl.tmaj.operations;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

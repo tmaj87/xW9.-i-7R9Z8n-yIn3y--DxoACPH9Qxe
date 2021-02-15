@@ -1,9 +1,6 @@
-package pl.tmaj;
+package pl.tmaj.parts;
 
-import pl.tmaj.with.Divided;
-import pl.tmaj.with.InRange;
-import pl.tmaj.with.MultipleParts;
-import pl.tmaj.with.Operation;
+import pl.tmaj.operations.*;
 
 import java.util.List;
 
@@ -12,7 +9,7 @@ public class Part {
     private final List<Operation> operations;
 
     protected Part(int limit) {
-        operations = List.of(new Divided(limit), new MultipleParts(), new InRange());
+        operations = List.of(new Divided(limit), new MultipleParts(), new InRange(), new Asterisk(limit));
     }
 
     public String evaluate(String part) {
