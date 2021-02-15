@@ -1,23 +1,18 @@
 package pl.tmaj;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
+import pl.tmaj.with.Divided;
+import pl.tmaj.with.InRange;
+import pl.tmaj.with.MultipleParts;
+import pl.tmaj.with.Operation;
 
-import static java.util.stream.Collectors.joining;
+import java.util.List;
 
 public class CronDescriber {
 
     private static final String SPACE = " ";
-    private static final String COMMA = ",";
-    private static final String DASH = "-";
     private static final int MINUTES_INDEX = 0;
-    private static final int MAX_MINUTES = 60;
-    private static final Predicate<String> WITH_ASTERISK = value -> value.startsWith("*/");
-    private static final Predicate<String> WITH_MULTIPLE_VALUES = value -> value.contains(COMMA);
-    private static final Predicate<String> WITH_RANGE = value -> value.contains(DASH);
 
+    private final List<Operation> operations = List.of(new Divided(), new MultipleParts(), new InRange());
     private final List<String> parts;
 
     public CronDescriber(String arguments) {
@@ -26,39 +21,10 @@ public class CronDescriber {
 
     public String getMinutes() {
         String part = parts.get(MINUTES_INDEX);
-        if (WITH_ASTERISK.test(part)) {
-            return minutesWithAsterisk(part);
-        }
-        if (WITH_MULTIPLE_VALUES.test(part)) {
-            return minutesMultipleValues(part);
-        }
-        if (WITH_RANGE.test(part)) {
-            return minutesInRange(part);
-        }
-        return part;
-    }
-
-    private String minutesWithAsterisk(String part) {
-        int asInt = parsePart(part);
-        return IntStream.range(0, MAX_MINUTES / asInt)
-                .map(i -> i * asInt)
-                .mapToObj(Objects::toString)
-                .collect(joining(SPACE));
-    }
-
-    private String minutesMultipleValues(String part) {
-        return String.join(SPACE, part.split(COMMA));
-    }
-
-    private String minutesInRange(String part) {
-        int from = Integer.parseInt(part.substring(0, part.indexOf(DASH)));
-        int to = Integer.parseInt(part.substring(part.indexOf(DASH) + 1));
-        return IntStream.rangeClosed(from, to)
-                .mapToObj(Objects::toString)
-                .collect(joining(SPACE));
-    }
-
-    private int parsePart(String part) {
-        return Integer.parseInt(part.substring(2));
+        return operations.stream()
+                .filter(operation -> operation.test(part))
+                .findFirst()
+                .map(operation -> operation.result(part))
+                .orElse(part);
     }
 }
