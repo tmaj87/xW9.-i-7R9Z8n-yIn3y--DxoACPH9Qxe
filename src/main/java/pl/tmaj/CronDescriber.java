@@ -3,6 +3,9 @@ package pl.tmaj;
 import pl.tmaj.parts.*;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class CronDescriber {
 
@@ -40,11 +43,33 @@ public class CronDescriber {
 
     public String getDayOfWeek() {
         String part = parts.get(4);
-        return new DaysOfWeek().evaluate(part);
+        String translated = translateDaysOfWeek(part);
+        return new DaysOfWeek().evaluate(translated);
+    }
+
+    private String translateDaysOfWeek(String part) {
+        part = part.replace("Mon", "1");
+        part = part.replace("Tue", "2");
+        part = part.replace("Wed", "3");
+        part = part.replace("Thu", "4");
+        part = part.replace("Fri", "5");
+        part = part.replace("Sat", "6");
+        part = part.replace("Sun", "7");
+        return part;
+    }
+
+    public Optional<String> getYear() {
+        String part = parts.get(5);
+        if (part.matches("^[0-9]{4}$")) {
+            return Optional.of(part);
+        }
+        return Optional.empty();
     }
 
     public String getCommand() {
-        return parts.get(5);
+        return Optional.empty().equals(getYear())
+                ? parts.get(5)
+                : parts.get(6);
     }
 
     public void print() {
@@ -53,6 +78,9 @@ public class CronDescriber {
         System.out.printf("day of month\t%s%n", getDayOfMonth());
         System.out.printf("month\t\t\t%s%n", getMonth());
         System.out.printf("day of week\t\t%s%n", getDayOfWeek());
+        if (!Optional.empty().equals(getYear())) {
+            System.out.printf("year\t\t\t%s%n", getYear().get());
+        }
         System.out.printf("command\t\t\t%s%n", getCommand());
     }
 }
