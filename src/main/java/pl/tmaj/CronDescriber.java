@@ -3,13 +3,12 @@ package pl.tmaj;
 import pl.tmaj.parts.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 public class CronDescriber {
 
     private static final String SPACE = " ";
+    private static final String YEAR_REGEX = "^[0-9]{4}$";
 
     private final List<String> parts;
 
@@ -60,16 +59,16 @@ public class CronDescriber {
 
     public Optional<String> getYear() {
         String part = parts.get(5);
-        if (part.matches("^[0-9]{4}$")) {
+        if (part.matches(YEAR_REGEX)) {
             return Optional.of(part);
         }
         return Optional.empty();
     }
 
     public String getCommand() {
-        return Optional.empty().equals(getYear())
-                ? parts.get(5)
-                : parts.get(6);
+        return getYear().isPresent()
+                ? parts.get(6)
+                : parts.get(5);
     }
 
     public void print() {
@@ -78,9 +77,7 @@ public class CronDescriber {
         System.out.printf("day of month\t%s%n", getDayOfMonth());
         System.out.printf("month\t\t\t%s%n", getMonth());
         System.out.printf("day of week\t\t%s%n", getDayOfWeek());
-        if (!Optional.empty().equals(getYear())) {
-            System.out.printf("year\t\t\t%s%n", getYear().get());
-        }
+        getYear().ifPresent(year -> System.out.printf("year\t\t\t%s%n", year));
         System.out.printf("command\t\t\t%s%n", getCommand());
     }
 }
