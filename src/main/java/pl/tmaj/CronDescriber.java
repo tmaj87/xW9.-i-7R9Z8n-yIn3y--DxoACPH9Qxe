@@ -47,13 +47,9 @@ public class CronDescriber {
     }
 
     private String translateDaysOfWeek(String part) {
-        part = part.replace("Mon", "1");
-        part = part.replace("Tue", "2");
-        part = part.replace("Wed", "3");
-        part = part.replace("Thu", "4");
-        part = part.replace("Fri", "5");
-        part = part.replace("Sat", "6");
-        part = part.replace("Sun", "7");
+        for (Days day : Days.all) {
+            part = part.replace(day.getDayName(), day.getReplaceTo());
+        }
         return part;
     }
 
